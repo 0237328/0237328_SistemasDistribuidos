@@ -20,13 +20,6 @@ type index struct {
 	size uint64
 }
 
-type Config struct {
-	Segment struct {
-		MaxStoreBytes uint64
-		MaxIndexBytes uint64
-	}
-}
-
 func newIndex(f *os.File, c Config) (*index, error) {
 	idx := &index{
 		file: f,
@@ -87,4 +80,8 @@ func (i *index) Close() error {
 		return err
 	}
 	return i.file.Close()
+}
+
+func (i *index) Name() string {
+	return i.file.Name() // Retorna el nombre del archivo
 }
