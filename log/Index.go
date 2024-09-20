@@ -20,6 +20,13 @@ type index struct {
 	size uint64
 }
 
+type Config struct {
+	Segment struct {
+		MaxStoreBytes uint64
+		MaxIndexBytes uint64
+	}
+}
+
 func newIndex(f *os.File, c Config) (*index, error) {
 	idx := &index{
 		file: f,
@@ -54,8 +61,8 @@ func (i *index) Read(in int64) (out uint32, pos uint64, err error) {
 	if uint64(in+1)*entWidth > i.size {
 		return 0, 0, fmt.Errorf("index out of bounds")
 	}
-	out = binary.BigEndian.Uint32(i.mmap[uint64(in*entWidth) : uint64(in*entWidth)+offWidth])
-	pos = binary.BigEndian.Uint64(i.mmap[uint64(in*entWidth)+offWidth : uint64(in*entWidth)+entWidth])
+	out = binary.BigEndian.Uint32(i.mmap[uint64(in)*entWidth : uint64(in)*entWidth+offWidth])
+	pos = binary.BigEndian.Uint64(i.mmap[uint64(in)*entWidth+offWidth : uint64(in)*entWidth+entWidth])
 	return out, pos, nil
 }
 
