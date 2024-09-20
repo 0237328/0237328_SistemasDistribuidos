@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
+	"strconv"
 	"sync"
 
-	"github.com/gorilla/mux"
 	"github.com/0237328/0237328_SistemasDistribuidos/log"
+	"github.com/gorilla/mux"
 )
 
 type Config struct {
@@ -23,8 +25,8 @@ type Log struct {
 	mu            sync.RWMutex
 	Dir           string
 	Config        Config
-	activeSegment *segment
-	segments      []*segment
+	activeSegment *Log.segment
+	segments      []*Log.segment
 }
 
 func NewLog(dir string, c Config) (*Log, error) {
@@ -56,12 +58,12 @@ func (l *Log) setup() error {
 		return baseOffsets[i] < baseOffsets[j]
 	})
 	for _, baseOffset := range baseOffsets {
-		if err = l.newSegment(baseOffset); err != nil {
+		if err := l.newSegment(baseOffset); err != nil {
 			return err
 		}
 	}
 	if l.segments == nil {
-		if err = l.newSegment(l.Config.Segment.MaxStoreBytes); err != nil {
+		if err := l.newSegment(l.Config.Segment.MaxStoreBytes); err != nil {
 			return err
 		}
 	}
@@ -69,7 +71,7 @@ func (l *Log) setup() error {
 }
 
 func (l *Log) newSegment(baseOffset uint64) error {
-	s, err := newSegment(l.Dir, baseOffset, l.Config)
+	s, err := log.NewSegment(l.Dir, baseOffset, l.Config)
 	if err != nil {
 		return err
 	}
