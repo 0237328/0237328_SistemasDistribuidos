@@ -1,4 +1,4 @@
-module github.com/0237328/Proyect_Comp_Distr
+module github.com/0237328/0237328_SistemasDistribuidos
 
 go 1.23.1
 
